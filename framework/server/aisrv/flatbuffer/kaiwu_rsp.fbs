@@ -1,0 +1,98 @@
+//每个客户端只会和aisrv建立一个连接，所有的智能体Agent的信息都通过这个连接发送和接收消息, gamecore和aisrv端交互的协议如下：
+//
+//1. INIT: 在连接建立的之后发送的第一个数据包，主要包含了静态信息
+//2. EP_START: 在MultiAgent环境标识一个episode（一局比赛）的开始，它必须在所有AGENT_START消息之前发送
+//3. AGENT_START: 标识一个Agent下一个episode的开始
+//4. UPDATE: 动态更新的数据包，请求主要包含了多个Agent的状态等信息，响应包含了多个Agent的动作
+//5. AGENT_END: 标识一个Agent一个episode的结束
+//6. EP_END: 在MultiAgent环境标识一局比赛结束，包含了这个比赛的结算信息，它必须在所有AGENT_END消息之后发送
+//7. EVENT: 标识一个特殊的事件，可以由业务扩展
+//8. QUIT: 标识客户端主动断开连接
+//9. HEARTBEAT: 用于维持和客户端之间的心跳
+//10. RESTART: 由服务器端发起，客户端重新开始一局比赛
+//11. REJECT: 由服务器发起，标识拒绝对客户端提供服务，客户端无需重连
+//
+//消息类型1~7分为请求和响应两种消息；
+//QUIT和HEARTBEAT仅会从客户端发送到服务端，服务端收到请求之后不响应；
+//RESTART包仅会从服务端发往客户端，客户端收到之后也不回包。
+
+//协议格式如下：
+//
+//| 4B, MAGIC:0x12345678        |
+//| 4B, Data Length             |
+//| Data                        |
+
+namespace kaiwu_msg;
+
+table InitRsp {
+    ret_code: int = 0;                             // 返回码
+}
+
+table EpStartRsp {
+    ret_code: int = 0;                             // 返回码
+    ep_id: uint;                                   // 标识当前episode的唯一ID
+    frame_interval: uint = 1;                      // 当前episode几帧发送一次update消息
+}
+
+table AgentStartRsp {
+    ret_code: int = 0;                             // 返回码
+    ep_id: uint;                                   // 标识当前episode的唯一ID
+    agent_id: uint;                                // 标识智能体的唯一ID
+}
+
+table UpdateRspData {
+    agent_id: uint;                                // 标识智能体的唯一ID
+    action: [byte] (required);                     // 动作数据，按业务自定义数据主体
+}
+
+table UpdateRsp {
+    ret_code: int = 0;                             // 返回码
+    ep_id: uint;                                   // 标识当前episode的唯一ID
+    data: [UpdateRspData];                         // 每个业务自定义的数据主体
+}
+
+table AgentEndRsp {
+    ret_code: int = 0;                             // 返回码
+    ep_id: uint;                                   // 标识当前episode的唯一ID
+    agent_id: uint;                                // 标识智能体的唯一ID
+}
+
+table EpEndRsp {
+    ret_code: int = 0;                             // 返回码
+    ep_id: uint;                                   // 标识当前episode的唯一ID
+}
+
+table EventRsp {
+    ret_code: int = 0;                             // 返回码
+    data: [byte];                                  // 每个业务自定义的数据主体
+}
+
+table Restart {
+    client_id: string (required);                  // 标识客户端的唯一ID
+    ep_id: uint;                                   // 标识当前episode的唯一ID
+    data: [byte];                                  // 每个业务自定义的数据主体
+}
+
+table Reject {
+    ret_code: int = 0;                             // 返回码
+    message: string (required);                    // 返回值描述
+}
+
+union RspMsg {
+    init_rsp: InitRsp,
+    ep_start_rsp: EpStartRsp,
+    agent_start_rsp: AgentStartRsp,
+    update_rsp: UpdateRsp,
+    agent_end_rsp: AgentEndRsp,
+    ep_end_rsp: EpEndRsp,
+    event_rsp: EventRsp,
+    restart: Restart,
+    reject: Reject
+}
+
+table Response {
+    seq_no: uint = 0;                               // 序列号
+    msg: RspMsg (required);
+}
+
+root_type Response;

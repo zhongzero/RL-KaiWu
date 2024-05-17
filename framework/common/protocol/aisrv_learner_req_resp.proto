@@ -1,0 +1,14 @@
+syntax = "proto2"; //用于proto3.x编译时兼容proto2.x
+package kaiwu_aisvr;
+
+import "google/protobuf/descriptor.proto";
+
+// 增加压缩和解压缩功能
+option optimize_for = LITE_RUNTIME;
+
+// aisrv --> learner请求方向
+message AisrvLearnerRequest 
+{
+  repeated float data = 1; // concat后的样本
+  required int32 batch_size =2; //多少样本拼接后发送过来
+}

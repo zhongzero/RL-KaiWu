@@ -1,0 +1,45 @@
+# proxy pypi
+--index-url https://mirrors.cloud.tencent.com/pypi/simple/
+# private pypi
+--extra-index-url https://mirrors.tencent.com/repository/pypi/tencent_pypi/simple/
+
+# add the requirements for trpc project
+aiohttp
+Cython
+portalocker
+protobuf
+PyYAML
+uvloop==0.14.0
+concurrent-log-asyncio
+
+#
+automaxprocs
+
+# trpc framework and plugins
+trpc>=0.2.0
+# trpc plugins
+trpc-log-atta
+trpc-metrics-m007
+trpc-metrics-runtime
+trpc-naming-polaris
+trpc-opentracing-tjg
+
+# sdk
+attaapi
+m007-metrics
+polaris-python
+tconf-python
+tjg-opentracing
+
+# add for the pytest framework
+pytest
+pytest-asyncio
+pytest-cov
+pytest-mock
+
+# add for your project
+# Add the stub package like this:
+#
+# git+http://git.code.oa.com/trpc-python/stubs/stub-package.git#egg=stub-package
+# 
+#

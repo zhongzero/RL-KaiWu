@@ -1,0 +1,50 @@
+[app]
+app = "sgame_1v1"
+self_play = true
+set_name = "set1"
+self_play_set_name = "set1"
+selfplay_app_conf = "conf/app_conf_sgame1v1_selfplay.json"
+noselfplay_app_conf = "conf/app_conf_sgame1v1_noselfplay.json"
+algo_conf = "conf/algo_conf_sgame1v1.json"
+
+# learner training batch size limit
+# learner训练批处理大小限制
+train_batch_size = 128
+# Sample generation / consumption ratio
+# 样本消耗/生成采样比
+production_consume_ratio = 5
+
+# Hyperparameters
+# 超参数
+learning_rate = 1e-6
+# entropy_loss_weight
+# 交叉熵权重
+var_beta = 0.025
+ppo_clip_range = 0.2
+
+# Configuration related to log files
+# 日志文件相关配置
+log_dir = "/data/projects/1v1/log"
+level = "INFO"
+tensorflow_log_level = "INFO"
+
+# algorithm
+# 算法
+algo = "ppo"
+
+# actor predict batch_size
+# actor预测批处理大小
+predict_batch_size = 32
+
+# The limit of sample size for single inference in aisrv
+# aisrv在单局发送样本大小限制
+send_sample_size = 100000
+
+# Configuration related to replay buffer
+# replay buffer的相关配置
+replay_buffer_capacity = 40960
+preload_ratio = 10
+
+# If the library for feature value processing is other plugins, configure it here; otherwise ignore this configuration item
+# 如果采用特征值处理的库是其他的插件, 则需要配置下, 否则忽略该配置项
+feature_process_lib_interface_configure = "/data/projects/1v1/environment/feature_process/config.dat"

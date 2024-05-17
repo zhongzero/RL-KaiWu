@@ -1,0 +1,217 @@
+[main]
+# 下面的项目是每个app要单独配置的
+app = "app"
+self_play = false
+set_name = "set1"
+self_play_set_name = "set2"
+selfplay_app_conf = "selfplay_app_conf"
+noselfplay_app_conf = "noselfplay_app_conf"
+algo_conf = "algo_conf"
+
+# learner训练批处理大小限制
+train_batch_size = 256
+# 样本消耗/生成采样比
+production_consume_ratio = 10
+
+# 采用的算法
+algo = "algo"
+
+# reverb移除策略, 可选项是reverb.selectors.Lifo, reverb.selectors.Prioritized, reverb.selectors.Fifo
+reverb_remover = "reverb.selectors.Fifo"
+# reverb采样策略, 可选项是reverb.selectors.Prioritized, reverb.selectors.Fifo, reverb.selectors.Uniform
+reverb_sampler = "reverb.selectors.Uniform"
+
+# 下面的是公共配置, 按需修改
+run_mode = "train"
+# 下面是日志文件相关配置
+log_dir = "/data/projects/1v1/log"
+level = "INFO"
+tensorflow_log_level = "INFO"
+
+# 评估模式模型文件路径
+eval_model_dir = "/data/ckpt/gorge_walk_v2_dqn/model.ckpt-0.pkl"
+
+# preload model file, 注意tensorflow里不用设置, pytorch里需要设置到具体的文件
+preload_model = false
+preload_model_file = "/data/ckpt/gorge_walk_dqn/model.ckpt-41185.pkl"
+
+# learner/actor之间同步model文件的时间间隔
+model_file_sync_per_minutes = 2
+
+# torch使用时默认的线程数目, 针对限制torch的CPU使用很重要
+torch_num_threads = 4
+
+# 使用的强化学习框架, 包括tensorflow_simple, tensorflow_complex, tensorrt, pytorch等, 默认是tensorflow_simple
+use_which_deep_learning_framework = "tensorflow_simple"
+
+# 训练时采用on-policy, off-policy
+algorithm_on_policy_or_off_policy = "off-policy"
+# 如果是on-policy, 支持的类型step(aisrv角度每帧), episode(aisrv角度每局), time_interval(learner角度多帧)
+on_policy_by_way = "step"
+# 如果是on-policy, 最大的超时时间间隔, 建议设置小些多次少量
+on_policy_timeout_seconds = 5
+# 如果是on-policy, 设置达到多少比例即开始执行, 主要是站在aisrv主进程的角度看aisrvhandler进程, 站在learner的角度看aisrv进程, 默认为1, 按照需要设置
+on_policy_quantity_ratio = 1
+
+# 如果采用特征值处理的库是其他的插件, 则需要配置下, 否则忽略该配置项
+feature_process_lib_interface_configure = "environment/feature_process/config.dat"
+
+rainbow_env_name = "rainbow_env_name"
+cpp_daemon_send_recv_zmq_data = false
+# 下面是日志文件相关配置
+rotation = "100MB"
+encoding = "utf-8"
+compression = "zip"
+retention = "10 days"
+# 日志按照json格式输出
+serialize = false
+# 如果输出了ERROR及其以上级别, 是否停掉进程
+stop_process_when_error = false
+# 下面是进程网络相关配置
+sock_buff_size = 31457280
+socket_timeout = 5
+backlog_size = 1024
+socket_retry_times = 100
+tcp_keep_alive = 1
+tcp_keep_alive_idle = 60
+tcp_keep_alive_intvl = 1
+tcp_keep_alive_cnt = 3
+tcp_immediate = true
+time_steps = 4
+policy_name = "train_one"
+# aisrv和actor通信方式, 支持zmq, zmq-ops
+aisrv_actor_communication_way = "zmq"
+# 下面是进程端口默认配置, 支持业务自定义端口
+aisrv_server_port = 8000
+reverb_svr_port = 9999
+zmq_server_port = 8888
+zmq_server_op_port = 6666
+client_svr_port = 5555
+arena_svr_port = 5566
+# 下面是zmq配置
+zmq_ops_sendhwm = 30720
+zmq_ops_recvhwm = 30720
+# 在繁忙的程度上, server端需要多开IO线程
+zmq_io_threads_client = 1
+zmq_io_threads_server = 2
+queue_size = 1024
+proxy_batch_size = 32
+# 下面是learner的checkpoint文件配置
+restore_dir = "/data/ckpt/"
+summary_dir = "/data/summary/"
+ckpt_dir = "/data/ckpt/"
+max_to_keep_ckpt_file_num = 50
+save_model_num = 1
+pb_model_dir = "/data/pb_model/"
+save_pb_num = 1
+save_summaries_steps = 10
+save_checkpoint_steps = 100
+save_checkpoint_secs = 120
+save_summaries_secs = 600
+cpu_num = 4
+learner_ip_addrs = "localhost,localhost"
+actor_ip_addrs = "localhost,localhost"
+learner_grpc_ports = "8001"
+actor_grpc_ports = "8002"
+learner_device_type = "GPU"
+use_rnn = false
+# learner上reverb相关配置
+reverb_table_name = "reverb_replay_buffer_table"
+reverb_table_size = 1
+# TensorRT引擎文件目录
+tensorrt_engine_dir = "/data/projects/1v1/framework/server/cpp/dist/actor/V100"
+# cpu亲和性
+actor_cpu_affinity_list = "0,1,2,3,4,5,6,7,8,9"
+# aisrv最大接收到的TCP连接数目
+max_tcp_count = 1000
+# 间隔多少帧就进行预测
+frame_interval = 3
+# actor/learner的同步modelpoll时间间隔
+ckpt_sync_way = "modelpool"
+print_profile = false
+print_profile_start_step = 100
+print_profile_end_step = 200
+# 进程空闲次数和休息时间
+idle_sleep_second = 0.001
+idle_sleep_count = 5
+# 下面是分配服务alloc的配置
+use_alloc = false
+alloc_process_address = "alloc_process_address"
+alloc_process_per_seconds = 15
+alloc_process_role_client = 1
+alloc_process_role_aisrv = 2
+alloc_process_role_actor = 3
+alloc_process_role_learner = 4
+alloc_process_role_arena = 7
+alloc_process_assign_limit_aisrv = 10000
+alloc_process_assign_limit_actor = 10000
+alloc_process_assign_limit_learner = 10000
+alloc_process_assign_limit_client = 10000
+alloc_process_assign_limit_arena = 10000
+# actor、learner进程启动方式, 0代表正常启动, 1代表从COS拉取model文件后启动
+start_actor_learner_process_type = 0
+# 下面是COS的配置, 安全监管的需求, cos_secret_id和cos_secret_key不再git代码里标注, 腾讯内部采用七彩石管理, 其他环境使用者确保安全问题
+push_to_cos = false
+cos_local_target_dir = "/data/cos_local_target_dir/"
+cos_local_keep_file_num = 10
+cos_secret_id = "cos_secret_id"
+cos_secret_key = "cos_secret_key"
+cos_bucket = "dataservice-use-1252931805"
+cos_region = "ap-nanjing"
+cos_token = "cos_token"
+# 下面是普罗米修斯的配置
+use_prometheus = false 
+prometheus_pwd = "prometheus_pwd"
+prometheus_user = "prometheus_user"
+prometheus_pushgateway = "prometheus_pushgateway"
+prometheus_stat_per_minutes = 1
+prometheus_instance = "kaiwu-drl"
+prometheus_db = "kaiwu-drl"
+# 下面是七彩石配置, 每个项目单独配置rainbow_env_name
+use_rainbow = false
+rainbow_url = "api.rainbow.oa.com:8080"
+rainbow_app_id = "02e8fe72-db77-4007-bc38-5d383b9e2b66"
+rainbow_user_id = "rainbow_user_id"
+rainbow_secret_key = "rainbow_secret_key"
+rainbow_activate_per_minutes = 10
+# 下面是压缩和解压缩配置
+use_compress_decompress = true
+compress_decompress_algorithms = "lz4"
+lz4_uncompressed_size = 3145728
+lz4_learner_uncompressed_size = 314572800
+# 下面是Redis配置
+redis_host = "redis_host"
+redis_port = 6379
+aisrv_actor_timeout_second_threshold = 1
+# 是否支持actor/learner扩缩容
+actor_learner_expansion = false
+# aisrv和actor之间通信信息, pickle和protobuf, actor是C++常驻进程时选择protobuf
+aisrv_actor_protocl = "pickle"
+# task_id
+task_id = "uuid"
+# reverb client设置
+reverb_client_max_sequence_length = 1
+reverb_client_chunk_length = 1
+# 启动C++ Daemon进程后多久启动python Daemon, 规避共享内存冲突问题
+start_python_daemon_sleep_after_cpp_daemon_sec = 1
+# 下面是算法里的配置, 更加详细的算法配置, 请参见:app/{业务}/common/configs/config.py
+learning_rate = 1e-4
+var_beta = 0.025
+ppo_clip_range = 0.2
+
+# battlesrv 针对gamecore和aisrv返回响应包的最大时间间隔, 超过了即当前battlesrv进程退出, 这个值需要根据实际情况配置, 特别是on-policy流程下推荐实地验证后再配置
+battlesrv_recv_response_from_gamecore_aisrv_seconds = 60
+
+# 打印特征值数据到文件
+print_predict_data = false
+print_predict_data_dir = "/data/summary/"
+
+# on-policy时单次重试的最大次数, 比如actor/learner同步model文件, learner等待aisrv心跳请求返回等, 其中on_policy_error_max_retry_rounds是最大轮数, 每轮里等待时间为on_policy_error_retry_count * idle_sleep_second
+on_policy_error_retry_count = 10000
+on_policy_error_max_retry_rounds = 3
+# on-policy时单次重试的最大次数, 减少对modelpool压力, 故和on_policy_error_retry_count单独设置参数
+on_policy_error_retry_count_when_modelpool = 3
+# 链路跟踪功能, 查看单个message_id从aisrv-->actor-->aisrv环节的耗时
+distributed_tracing = false
+# actor_proxy, actor_server使用进程的方式, 包括direct直接调用, coroutine协程, thread线程, gevent并行
+server_use_processes = "direct"

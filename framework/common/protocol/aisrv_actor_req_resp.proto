@@ -1,0 +1,24 @@
+syntax = "proto2"; //用于proto3.x编译时兼容proto2.x
+package kaiwu_aisvr;
+
+import "google/protobuf/descriptor.proto";
+
+// 增加压缩和解压缩功能
+option optimize_for = LITE_RUNTIME;
+
+// aisrv --> actor请求方向
+message AisrvActorRequest 
+{
+  required int32 client_id = 1; // client_id
+  repeated int32 compose_id = 2; // compose_id
+  repeated float feature = 3; // 预测请求obs
+  required int32 sample_size =4; //多少样本拼接后发送过来
+}
+
+// actor --> aisrv响应方向
+message AisrvActorResponse
+{
+  //logits, value, meta_msg, lstm_cell, lstm_hidden
+  repeated int32 compose_id = 1; // compose_id
+  repeated float output = 2; // 预测响应
+}
