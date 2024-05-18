@@ -111,7 +111,12 @@ class Agent:
         # The logging interface is provided by the framework.
         # 日志接口从框架侧提供
         self.logger = None
- 
+
+        # Whether to select the model with bias, the default option is not to select.
+        self.select_with_bias=False
+        self.bias_k=1.5
+
+
     def set_logger(self, logger):
         '''
         The framework provides a logging interface that can be directly used by the framework users.
@@ -236,10 +241,16 @@ class Agent:
             midx = len(self.model_list)-1
             self.is_latest_model = True
         else:
-            midx = int(random.random() * len(self.model_list))
-            if midx == len(self.model_list):
-                midx = len(self.model_list)-1
-            self.is_latest_model = False
+            if not self.select_with_bias:
+                midx = int(random.random() * len(self.model_list))
+                if midx == len(self.model_list):
+                    midx = len(self.model_list)-1
+                self.is_latest_model = False
+            else:
+                indices=np.arange(len(self.model_list))
+                probabilites=(indices+1)**self.bias_k
+                probabilites=probabilites/np.sum(probabilites)
+                midx = np.random.choice(indices, p=probabilites)
         return self._load_model(self.model_list[midx])
 
     def _get_latest_model(self):
