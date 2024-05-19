@@ -15,7 +15,6 @@
 '''
 
 import numpy as np
-import tensorflow_probability as tfp
 
 from framework.common.utils.tf_utils import *
 from conf.config import ModelConfig as Config
@@ -35,6 +34,12 @@ class Model():
 
         初始化特征参数配置.
         """
+        ############################################################
+        # these hyperparameters are set according to paper wang20b #
+        self.use_truly_ppo = 1 # if use TR-PPO-RB                  #
+        self.delta = 0.03      # values can be modified            #
+        self.alpha = 0.05      # values can be modified            #
+        ############################################################
    
         assert mode in ["actor", "learner"]
         self.mode = mode
@@ -210,11 +215,10 @@ class Model():
         frame_is_train = tf.squeeze(unsqueeze_frame_is_train, axis=[1])
         return reward, advantage, label_list, frame_is_train, weight_list
 
-    def kl_divergence(self, datas1, datas2):
-        distribution1 = tfp.distributions.Categorical(probs = datas1)
-        distribution2 = tfp.distributions.Categorical(probs = datas2)
-
-        return tf.expand_dims(tfp.distributions.kl_divergence(distribution1, distribution2), 1)
+    def kl_divergence(self, old_probs, new_probs):
+        epsilon = 1e-10
+        kl_div = old_probs * (tf.math.log(old_probs + epsilon) - tf.math.log(new_probs + epsilon))
+        return tf.reduce_sum(kl_div, axis=1)
 
     def _calculate_loss(self, unsqueeze_label_list, old_label_probability_list, fc2_label_list, unsqueeze_reward, unsqueeze_advantage, fc2_value_result, seri_vec, unsqueeze_is_train, unsqueeze_weight_list):
         '''
@@ -285,14 +289,15 @@ class Model():
                 clip_ratio = tf.clip_by_value(ratio, 0.0, 3.0)
                 surr1 = clip_ratio * advantage
 
-                use_truly_ppo = 1 # if use TR-PPO-RB
-
-                if use_truly_ppo:
-                    delta = 0.03 # hyperparameters are set according to paper wang20b;
-                    alpha = 0.05 # these values could be adjust.
+                if self.use_truly_ppo:
                     Kl = self.kl_divergence(one_hot_actions * old_label_probability_list[task_index], one_hot_actions * label_probability)
-                    F = -alpha * ratio if Kl >= delta else ratio
-                else: # origin code
+                    condition = Kl >= self.delta
+                    F = tf.where(
+                        condition,
+                        -self.alpha * ratio,
+                        ratio
+                    )
+                else: # origin method
                     F = tf.clip_by_value(ratio, 1.0 - self.clip_param, 1.0 + self.clip_param)
                 surr2 = F * advantage
 
