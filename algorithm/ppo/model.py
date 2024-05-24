@@ -290,13 +290,20 @@ class Model():
                 surr1 = clip_ratio * advantage
 
                 if self.use_truly_ppo:
-                    Kl = self.kl_divergence(one_hot_actions * old_label_probability_list[task_index], one_hot_actions * label_probability)
-                    condition = Kl >= self.delta
-                    F = tf.where(
-                        condition,
-                        -self.alpha * ratio,
-                        ratio
-                    )
+                    # Kl = self.kl_divergence(old_policy_p, policy_p)
+                    # condition = Kl >= self.delta
+                    # F = tf.where(
+                    #     condition,
+                    #     -self.alpha * ratio,
+                    #     ratio
+                    # )
+                    self.alpha = 0.3
+                    if ratio <= 1 - self.clip_param:
+                        F = -self.alpha * ratio + (1 + self.alpha) * (1 - self.clip_param)
+                    elif ratio >= 1 + self.clip_param:
+                        F = -self.alpha * ratio + (1 + self.alpha) * (1 + self.clip_param)
+                    else:
+                        F = ratio
                 else: # origin method
                     F = tf.clip_by_value(ratio, 1.0 - self.clip_param, 1.0 + self.clip_param)
                 surr2 = F * advantage
